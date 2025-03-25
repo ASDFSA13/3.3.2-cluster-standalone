@@ -1,0 +1,28 @@
+# Dockerfile.spark-master
+ARG spark_version
+FROM spark-base:${spark_version}
+LABEL manteiner="Andre Perez <andre.marcos.perez@gmail.com>"
+
+# -- Layer: Image Metadata
+ARG build_date
+LABEL org.label-schema.build-date=${build_date}
+LABEL org.label-schema.name="Apache Spark Standalone Cluster on Docker - Spark Master Image"
+LABEL org.label-schema.description="Spark master image (includes History Server)"
+LABEL org.label-schema.url="https://github.com/andre-marcos-perez/spark-cluster-on-docker"
+LABEL org.label-schema.schema-version="1.0"
+
+# -- Runtime
+# Master UI: 8080, Master RPC: 7077, History Server: 18080
+EXPOSE 8080 7077 18080
+
+# 使用一个脚本启动 Master + HistoryServer
+#  - Master 以后台方式启动
+#  - HistoryServer 前台启动 (保持容器前台进程)
+RUN echo '#!/bin/bash \n\
+bin/spark-class org.apache.spark.deploy.master.Master &\n\
+sleep 2\n\
+bin/spark-class org.apache.spark.deploy.history.HistoryServer\n' \
+> /start-master-history.sh && \
+chmod +x /start-master-history.sh
+
+CMD ["/bin/bash", "/start-master-history.sh"]

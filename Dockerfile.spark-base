@@ -1,0 +1,43 @@
+# Dockerfile.spark-base
+FROM base
+LABEL manteiner="Andre Perez <andre.marcos.perez@gmail.com>"
+
+# -- Layer: Image Metadata
+ARG build_date
+LABEL org.label-schema.build-date=${build_date}
+LABEL org.label-schema.name="Apache Spark Standalone Cluster on Docker - Spark Base Image"
+LABEL org.label-schema.description="Spark base image shipped Spark"
+LABEL org.label-schema.url="https://github.com/andre-marcos-perez/spark-cluster-on-docker"
+LABEL org.label-schema.schema-version="1.0"
+
+# -- Layer: Apache Spark
+ARG spark_version=3.3.2
+ARG hadoop_version=3
+
+RUN apt-get update -y && apt-get install -y curl && \
+    curl https://archive.apache.org/dist/spark/spark-${spark_version}/spark-${spark_version}-bin-hadoop${hadoop_version}.tgz -o spark.tgz && \
+    tar -xf spark.tgz && \
+    mv spark-${spark_version}-bin-hadoop${hadoop_version} /usr/bin/ && \
+    echo "alias pyspark=/usr/bin/spark-${spark_version}-bin-hadoop${hadoop_version}/bin/pyspark" >> ~/.bashrc && \
+    echo "alias spark-shell=/usr/bin/spark-${spark_version}-bin-hadoop${hadoop_version}/bin/spark-shell" >> ~/.bashrc && \
+    # 在 /opt/workspace 下创建 spark-events 目录，用于事件日志
+    mkdir -p /opt/workspace/spark-events && \
+    rm spark.tgz
+
+ENV SPARK_HOME=/usr/bin/spark-${spark_version}-bin-hadoop${hadoop_version}
+ENV SPARK_MASTER_HOST=spark-master
+ENV SPARK_MASTER_PORT=7077
+ENV PYSPARK_PYTHON=python3
+
+# 默认开启事件日志 & 配置 History Server
+# 这里指定把日志存放在 /opt/workspace/spark-events，并且开通 18080 端口
+RUN echo "\
+spark.eventLog.enabled           true\n\
+spark.eventLog.dir               file:///opt/workspace/spark-events\n\
+spark.history.provider           org.apache.spark.deploy.history.FsHistoryProvider\n\
+spark.history.fs.logDirectory    file:///opt/workspace/spark-events\n\
+spark.history.ui.port            18080\n\
+" >> ${SPARK_HOME}/conf/spark-defaults.conf
+
+# -- Runtime
+WORKDIR ${SPARK_HOME}
