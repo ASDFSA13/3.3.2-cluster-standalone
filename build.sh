@@ -17,9 +17,9 @@ docker build \
   --build-arg debian_buster_image_tag=${DEBIAN_TAG} \
   --build-arg scala_version=${SCALA_VERSION} \
   --build-arg build_date=${BUILD_DATE} \
-  -t base:latest \
+  -t base \
   -f Dockerfile.base .
-
+#   adada
 # 构建 jupyter 镜像
 docker build \
   --build-arg build_date=${BUILD_DATE} \
@@ -27,7 +27,7 @@ docker build \
   --build-arg jupyterlab_version=${JUPYTERLAB_VERSION} \
   --build-arg scala_kernel_version=${SCALA_KERNEL_VERSION} \
   --build-arg scala_version=${SCALA_VERSION} \
-  -t spark-cluster-jupyter:latest \
+  -t spark-cluster-jupyter \
   -f Dockerfile.jupyter .
 
 # 构建 spark-base 镜像（安装 Spark、打开事件日志）
@@ -35,19 +35,19 @@ docker build \
   --build-arg build_date=${BUILD_DATE} \
   --build-arg spark_version=${SPARK_VERSION} \
   --build-arg hadoop_version=${HADOOP_VERSION} \
-  -t spark-cluster-spark-base:latest \
+  -t spark-cluster-base \
   -f Dockerfile.spark-base .
 
 # 构建 spark-master 镜像（同时启动 Master + History Server）
 docker build \
   --build-arg build_date=${BUILD_DATE} \
   --build-arg spark_version=${SPARK_VERSION} \
-  -t spark-cluster-spark-master:latest \
+  -t spark-cluster-spark-master \
   -f Dockerfile.spark-master .
 
 # 构建 spark-worker 镜像（不重定向日志）
 docker build \
   --build-arg build_date=${BUILD_DATE} \
   --build-arg spark_version=${SPARK_VERSION} \
-  -t spark-cluster-spark-worker:latest \
+  -t spark-cluster-spark-worker \
   -f Dockerfile.spark-worker .

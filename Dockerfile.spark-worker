@@ -1,6 +1,6 @@
 # Dockerfile.spark-worker
 ARG spark_version
-FROM spark-cluster-base:${spark_version}
+FROM spark-cluster-base
 LABEL manteiner="Andre Perez <andre.marcos.perez@gmail.com>"
 
 # -- Layer: Image Metadata
