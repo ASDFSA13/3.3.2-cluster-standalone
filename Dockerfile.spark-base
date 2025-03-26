@@ -1,20 +1,18 @@
 # Dockerfile.spark-base
 FROM base
-LABEL manteiner="Andre Perez <andre.marcos.perez@gmail.com>"
+LABEL maintainer="zyl"
 
 # -- Layer: Image Metadata
 ARG build_date
 LABEL org.label-schema.build-date=${build_date}
-LABEL org.label-schema.name="Apache Spark Standalone Cluster on Docker - Spark Base Image"
 LABEL org.label-schema.description="Spark base image shipped Spark"
-LABEL org.label-schema.url="https://github.com/andre-marcos-perez/spark-cluster-on-docker"
 LABEL org.label-schema.schema-version="1.0"
 
 # -- Layer: Apache Spark
 ARG spark_version=3.3.2
 ARG hadoop_version=3
 
-RUN apt-get update -y && apt-get install -y curl && \
+RUN apt-get update -y && apt-get install -y curl vim procps && \
     curl https://archive.apache.org/dist/spark/spark-${spark_version}/spark-${spark_version}-bin-hadoop${hadoop_version}.tgz -o spark.tgz && \
     tar -xf spark.tgz && \
     mv spark-${spark_version}-bin-hadoop${hadoop_version} /usr/bin/ && \
@@ -38,6 +36,8 @@ spark.history.provider           org.apache.spark.deploy.history.FsHistoryProvid
 spark.history.fs.logDirectory    file:///opt/workspace/spark-events\n\
 spark.history.ui.port            18080\n\
 " >> ${SPARK_HOME}/conf/spark-defaults.conf
+
+COPY workspace/*.jar ${SPARK_HOME}/jars/
 
 # -- Runtime
 WORKDIR ${SPARK_HOME}

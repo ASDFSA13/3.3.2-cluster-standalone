@@ -1,14 +1,12 @@
 # Dockerfile.spark-master
 ARG spark_version
 FROM spark-cluster-base
-LABEL manteiner="Andre Perez <andre.marcos.perez@gmail.com>"
+LABEL maintainer="zyl"
 
 # -- Layer: Image Metadata
 ARG build_date
 LABEL org.label-schema.build-date=${build_date}
-LABEL org.label-schema.name="Apache Spark Standalone Cluster on Docker - Spark Master Image"
 LABEL org.label-schema.description="Spark master image (includes History Server)"
-LABEL org.label-schema.url="https://github.com/andre-marcos-perez/spark-cluster-on-docker"
 LABEL org.label-schema.schema-version="1.0"
 
 # -- Runtime
