@@ -46,7 +46,7 @@ BASENAME=$(basename "$LOCAL_FILE")
 FILE_EPOCH=$(stat -c '%Y' "$LOCAL_FILE")
 
 echo "===> 1) 把本地 [$LOCAL_FILE] SCP 到 [$SSH_HOST:$REMOTE_TMP_DIR/$BASENAME] ..."
-scp "$LOCAL_FILE" "${SSH_USER}@${SSH_HOST}:${REMOTE_TMP_DIR}/$BASENAME"
+scp "$LOCAL_FILE" "${SSH_USER}@${SSH_HOST}:${REMOTE_TMP_DIR}/${FILE_EPOCH}-$BASENAME"
 if [[ $? -ne 0 ]]; then
   echo "SCP 失败，请检查网络/权限"
   exit 1
@@ -54,22 +54,22 @@ fi
 
 echo "===> 2) SSH 远程执行: 把文件用 docker cp 推到容器 [$CONTAINER_NAME] ..."
 ssh "${SSH_USER}@${SSH_HOST}" <<EOF
-  docker cp "${REMOTE_TMP_DIR}/$BASENAME" "${CONTAINER_NAME}:${CONTAINER_WORKSPACE}/$BASENAME"
+  docker cp "${REMOTE_TMP_DIR}/${FILE_EPOCH}-$BASENAME" "${CONTAINER_NAME}:${CONTAINER_WORKSPACE}/${FILE_EPOCH}-$BASENAME"
   if [[ \$? -ne 0 ]]; then
     echo "docker cp 失败"
     exit 1
   fi
 
-  echo "===> 3) 还原容器内文件修改时间 -> [\$FILE_EPOCH=$FILE_EPOCH]"
-  # 注意：touch 的 -d 参数接受形如 @1679839232 的 EPOCH 时间
-  docker exec "$CONTAINER_NAME" touch -m -d "@$FILE_EPOCH" "${CONTAINER_WORKSPACE}/$BASENAME"
-  if [[ \$? -ne 0 ]]; then
-    echo "touch 修正时间失败"
-    exit 1
-  fi
+#  echo "===> 3) 还原容器内文件修改时间 -> [\$FILE_EPOCH=$FILE_EPOCH]"
+#  # 注意：touch 的 -d 参数接受形如 @1679839232 的 EPOCH 时间
+#  docker exec "$CONTAINER_NAME" touch -m -d "@$FILE_EPOCH" "${CONTAINER_WORKSPACE}/${FILE_EPOCH}-$BASENAME"
+#  if [[ \$? -ne 0 ]]; then
+#    echo "touch 修正时间失败"
+#    exit 1
+#  fi
 
-  echo "===> 4) 在容器内执行 spark-submit 运行脚本..."
-  docker exec "$CONTAINER_NAME" "$SPARK_SUBMIT_PATH" "${CONTAINER_WORKSPACE}/$BASENAME"
+  echo "===> 3) 在容器内执行 spark-submit 运行脚本..."
+  docker exec "$CONTAINER_NAME" "$SPARK_SUBMIT_PATH" "${CONTAINER_WORKSPACE}/${FILE_EPOCH}-$BASENAME"
 EOF
 
 echo "===> 完成！"
