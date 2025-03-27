@@ -24,6 +24,9 @@ services:
       - 18080:18080  # History Server UI
     volumes:
       - shared-workspace:/opt/workspace
+    environment:
+      - SPARK_PUBLIC_DNS=spark-master
+      - SPARK_WORKER_WEBUI_HOST=spark-master
 
   spark-worker-1:
     image: spark-cluster-worker:latest
@@ -31,6 +34,8 @@ services:
     environment:
       - SPARK_WORKER_CORES=1
       - SPARK_WORKER_MEMORY=512m
+      - SPARK_PUBLIC_DNS=spark-master
+      - SPARK_WORKER_WEBUI_HOST=spark-master
     ports:
       - 8081:8081    # Spark Worker UI
     volumes:
@@ -44,6 +49,8 @@ services:
     environment:
       - SPARK_WORKER_CORES=1
       - SPARK_WORKER_MEMORY=512m
+      - SPARK_PUBLIC_DNS=spark-master
+      - SPARK_WORKER_WEBUI_HOST=spark-master
     ports:
       - 8082:8081    # 第二个 Worker: 宿主机用 8082 来映射容器 8081
     volumes:
