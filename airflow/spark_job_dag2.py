@@ -1,9 +1,7 @@
 from airflow import DAG
-from airflow.operators.bash_operator import BashOperator
+from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 from datetime import datetime, timedelta
-import os
 
-# 默认参数配置
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
@@ -15,18 +13,27 @@ default_args = {
 dag = DAG(
     dag_id='spark_job_dag2',
     default_args=default_args,
-    schedule_interval='0 2 * * *',  # 每天凌晨2点执行
+    schedule_interval='0 2 * * *',  # 每天凌晨2点
     catchup=False
 )
 
-# 假设 push_and_submit_remote.sh 和 demo.py 都放在 /opt/airflow/scripts/ 目录
-# 或者你自行指定路径
-BASE_DIR = "/opt/airflow/scripts"
-SCRIPT_PATH = os.path.join(BASE_DIR, "push_and_submit_remote.sh")
-PYSPARK_FILE = os.path.join(BASE_DIR, "demo.py")
+spark_job = SparkSubmitOperator(
+    task_id='spark_submit_job',
+    # 这里的 conn_id 要与 Airflow Connection 中的 spark_default (或你自定义的名称) 对应
+    conn_id='spark_default',
 
-run_spark_via_bash = BashOperator(
-    task_id='run_spark_via_bash',
-    bash_command=f"{SCRIPT_PATH} {PYSPARK_FILE}",  # 调用脚本，传入本地的 pyspark 文件
+    # 你的 PySpark 程序本地路径
+    application='/opt/airflow/logs/demo.py',
+
+    # 若你没在 conn extra 里配置 master，可以在这里指定
+    master='spark://spark-master:7077',
+
+    # 也可以额外加参数，比如:
+    conf={'spark.executor.memory': '512m'},
+#     total_executor_cores=2,
+    executor_cores=1,
+    executor_memory='512m',
+    name='RandomWorkerJob',
+
     dag=dag
 )
