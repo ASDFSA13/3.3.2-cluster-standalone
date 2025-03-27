@@ -1,0 +1,58 @@
+version: '3.7'
+
+services:
+  mysql:
+    image: mysql:8.0.27
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: airflow
+      MYSQL_USER: airflow
+      MYSQL_PASSWORD: airflowpassword
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_general_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  airflow-webserver:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    build: .  # 使用当前目录下的 Dockerfile 构建镜像
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: mysql+mysqldb://airflow:airflowpassword@mysql:3306/airflow
+      AIRFLOW__CORE__FERNET_KEY: 'A-kQeo4UAyxoxfpc3ZFjIXbfU9l3U4QaBojPsK-8Y4Y='
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__WEBSERVER__RBAC: 'true'
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+    command: ["bash", "-c", "airflow db init && airflow users create -r Admin -u admin -p admin -e admin@example.com -f Admin -l User && airflow webserver"]
+
+  airflow-scheduler:
+    build: .  # 同样使用当前目录下的 Dockerfile
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: mysql+mysqldb://airflow:airflowpassword@mysql:3306/airflow
+      AIRFLOW__CORE__FERNET_KEY: 'A-kQeo4UAyxoxfpc3ZFjIXbfU9l3U4QaBojPsK-8Y4Y='
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__WEBSERVER__RBAC: 'true'
+    depends_on:
+      - mysql
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+    command: ["bash", "-c", "airflow scheduler"]
+
+volumes:
+  mysql_data:
