@@ -60,13 +60,6 @@ ssh "${SSH_USER}@${SSH_HOST}" <<EOF
     exit 1
   fi
 
-#  echo "===> 3) 还原容器内文件修改时间 -> [\$FILE_EPOCH=$FILE_EPOCH]"
-#  # 注意：touch 的 -d 参数接受形如 @1679839232 的 EPOCH 时间
-#  docker exec "$CONTAINER_NAME" touch -m -d "@$FILE_EPOCH" "${CONTAINER_WORKSPACE}/${FILE_EPOCH}-$BASENAME"
-#  if [[ \$? -ne 0 ]]; then
-#    echo "touch 修正时间失败"
-#    exit 1
-#  fi
 
   echo "===> 3) 在容器内执行 spark-submit 运行脚本..."
   docker exec "$CONTAINER_NAME" "$SPARK_SUBMIT_PATH" "${CONTAINER_WORKSPACE}/${FILE_EPOCH}-$BASENAME"
