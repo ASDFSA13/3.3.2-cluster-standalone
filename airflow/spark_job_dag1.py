@@ -62,17 +62,17 @@ get_file_epoch_task = PythonOperator(
 # 如果已经配置好 Airflow SSH Connection(免密或key)，可以用 “方式 B)” (SFTPOperator/SSHOperator) 来上传
 # --------------------------------------------------------------------
 
-SSH_PASSWORD = "123456"   # 示例演示，如果要明文写在脚本里，不安全，仅供演示
-
-scp_command = f"""
-sshpass -p '{SSH_PASSWORD}' scp {LOCAL_PYSPARK_FILE} zyl@192.168.116.129:{REMOTE_TMP_DIR}/`echo {{{{ ti.xcom_pull(task_ids='get_file_epoch') }}}}`-$(basename {LOCAL_PYSPARK_FILE})
-"""
-
-scp_to_remote_task = BashOperator(
-    task_id='scp_to_remote',
-    bash_command=scp_command,
-    dag=dag
-)
+# SSH_PASSWORD = "123456"   # 示例演示，如果要明文写在脚本里，不安全，仅供演示
+#
+# scp_command = f"""
+# sshpass -p '{SSH_PASSWORD}' scp {LOCAL_PYSPARK_FILE} zyl@192.168.116.129:{REMOTE_TMP_DIR}/`echo {{{{ ti.xcom_pull(task_ids='get_file_epoch') }}}}`-$(basename {LOCAL_PYSPARK_FILE})
+# """
+#
+# scp_to_remote_task = BashOperator(
+#     task_id='scp_to_remote',
+#     bash_command=scp_command,
+#     dag=dag
+# )
 
 # --------------------------------------------------------------------
 # 方式 B) (可选) 若不想写明文密码 + sshpass，可以用 SFTPOperator 或 SSHOperator
@@ -96,6 +96,18 @@ scp_to_remote_task = BashOperator(
 #   )
 # --------------------------------------------------------------------
 # 这里先保留最简单的 BashOperator + sshpass 示例.
+
+
+scp_to_remote_task = SFTPOperator(
+    task_id='scp_to_remote',
+    ssh_conn_id=SSH_CONN_ID,  # 指向 Airflow Connections 中的 SSH 连接 ID
+    local_filepath=LOCAL_PYSPARK_FILE,
+    remote_filepath=f"{REMOTE_TMP_DIR}/{{{{ ti.xcom_pull(task_ids='get_file_epoch') }}}}-{os.path.basename(LOCAL_PYSPARK_FILE)}",
+    operation='put',                  # put = 上传，get = 下载
+    create_intermediate_dirs=True,    # 如果远程目录不存在，是否自动创建
+    dag=dag
+)
+
 
 # --------------------------------------------------------------------
 # docker_cp：将上一步上传到远程服务器的文件，复制到容器内部
