@@ -37,7 +37,7 @@ spark.history.fs.logDirectory    file:///opt/workspace/spark-events\n\
 spark.history.ui.port            18080\n\
 " >> ${SPARK_HOME}/conf/spark-defaults.conf
 
-COPY workspace/*.jar ${SPARK_HOME}/jars/
+COPY workspace/*.jar ${SPARK_HOME}/jars/    #把数据库的连接器一起打包
 
 # -- Runtime
 WORKDIR ${SPARK_HOME}
