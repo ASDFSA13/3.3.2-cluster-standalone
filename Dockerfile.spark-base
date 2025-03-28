@@ -28,7 +28,7 @@ ENV SPARK_MASTER_PORT=7077
 ENV PYSPARK_PYTHON=python3
 
 # 默认开启事件日志 & 配置 History Server
-# 这里指定把日志存放在 /opt/workspace/spark-events，并且开通 18080 端口
+# 这里指定把日志存放在 /opt/workspace/spark-events，并且开通 18080 端口  可以以项目目录里面的conf为准
 RUN echo "\
 spark.eventLog.enabled           true\n\
 spark.eventLog.dir               file:///opt/workspace/spark-events\n\
