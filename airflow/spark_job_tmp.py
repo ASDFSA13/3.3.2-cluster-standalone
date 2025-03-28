@@ -40,6 +40,7 @@ jar_task = SparkSubmitOperator(
     executor_cores=1,
     executor_memory='1g',
     conf={'spark.executor.memory': '1g'},
+    deploy_mode='cluster',  # 👈 加上这个！
     name='Jar_WordCountJob',
     dag=dag
 )

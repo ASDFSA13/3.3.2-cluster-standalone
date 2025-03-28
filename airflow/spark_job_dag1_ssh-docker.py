@@ -28,7 +28,7 @@ default_args = {
 
 # ------------------ 定义 DAG ------------------
 dag = DAG(
-    dag_id='spark_job_dag1',
+    dag_id='spark_job_dag1_ssh-docker',
     default_args=default_args,
     schedule_interval='0 2 * * *',  # 每天凌晨2点执行
     catchup=False
