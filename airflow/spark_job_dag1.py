@@ -13,7 +13,7 @@ REMOTE_TMP_DIR = "/home/zyl"                     # 远程服务器临时存放�
 CONTAINER_NAME = "spark-master"
 CONTAINER_WORKSPACE = "/opt/workspace"
 SPARK_SUBMIT_PATH = "/usr/bin/spark-3.3.2-bin-hadoop3/bin/spark-submit"
-
+TOKEN=""
 # 在 Airflow Connections 中配置好的 SSH 连接
 SSH_CONN_ID = "ssh_spark_server"
 
@@ -87,6 +87,19 @@ docker_cp_task = SSHOperator(
 )
 
 # ------------------ 第3步：容器内执行 spark-submit ------------------
+spark_submit_command=""
+if (TOKEN!=""){
+spark_submit_command = """
+docker exec {container_name} {spark_submit} {workspace}/{file_epoch}-$(basename {local_file}) --conf spark.authenticate.secret={authenticate_secret}
+""".format(
+    container_name=CONTAINER_NAME,
+    spark_submit=SPARK_SUBMIT_PATH,
+    workspace=CONTAINER_WORKSPACE,
+    file_epoch="{{ ti.xcom_pull(task_ids='get_file_epoch') }}",
+    local_file=LOCAL_PYSPARK_FILE,
+    authenticate_secret=TOKEN
+)
+}else{
 spark_submit_command = """
 docker exec {container_name} {spark_submit} {workspace}/{file_epoch}-$(basename {local_file})
 """.format(
@@ -96,6 +109,8 @@ docker exec {container_name} {spark_submit} {workspace}/{file_epoch}-$(basename 
     file_epoch="{{ ti.xcom_pull(task_ids='get_file_epoch') }}",
     local_file=LOCAL_PYSPARK_FILE
 )
+}
+
 
 spark_submit_task = SSHOperator(
     task_id='spark_submit_in_container',

@@ -39,7 +39,7 @@ EXTENSION="${BASENAME##*.}"
 FILE_EPOCH=$(stat -c '%Y' "$LOCAL_FILE")
 REMOTE_FILENAME="${FILE_EPOCH}-${BASENAME}"
 
-# 提前构造 spark-submit 命令
+# 提前构造 spark-submit 命令 --conf spark.authenticate.secret=XXXXX 使用安全令牌进行提交
 if [[ "$EXTENSION" == "py" ]]; then
   SPARK_SUBMIT_CMD="${SPARK_SUBMIT_PATH} --master ${SPARK_MASTER_URL} ${CONTAINER_WORKSPACE}/${REMOTE_FILENAME}"
 elif [[ "$EXTENSION" == "jar" ]]; then

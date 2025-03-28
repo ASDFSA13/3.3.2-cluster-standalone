@@ -17,6 +17,8 @@ dag = DAG(
     catchup=False
 )
 
+# --conf spark.authenticate.secret=XXXXX 使用安全令牌进行提交  这里需要在airflow配置conn_id的连接信息中包含令牌
+
 spark_job = SparkSubmitOperator(
     task_id='spark_submit_job',
     # 这里的 conn_id 要与 Airflow Connection 中的 spark_default (或你自定义的名称) 对应

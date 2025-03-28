@@ -35,7 +35,7 @@ if pgrep -f 'org.apache.spark.deploy.history.HistoryServer' > /dev/null; then
     ${SPARK_HOME}/sbin/stop-history-server.sh
 fi
 
-# 覆盖配置文件（每次全新覆盖）
+# 覆盖配置文件（每次全新覆盖） 可以以项目目录里面的conf为准
 cat > ${SPARK_HOME}/conf/spark-defaults.conf << EOF
 spark.eventLog.enabled           true
 spark.eventLog.dir               file://$HOME/log/spark-events
