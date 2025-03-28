@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, timedelta
-
+#import pdb;pdb.set_trace();
 # Airflow DAG & Operator 引用
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
@@ -82,6 +82,7 @@ docker_cp_task = SSHOperator(
     task_id='docker_cp',
     ssh_conn_id=SSH_CONN_ID,
     command=docker_cp_command,
+    get_pty=True,
     dag=dag
 )
 
@@ -100,6 +101,7 @@ spark_submit_task = SSHOperator(
     task_id='spark_submit_in_container',
     ssh_conn_id=SSH_CONN_ID,
     command=spark_submit_command,
+    get_pty=True,
     dag=dag
 )
 
