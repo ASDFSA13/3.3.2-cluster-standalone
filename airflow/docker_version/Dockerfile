@@ -17,14 +17,12 @@ ENV JAVA_VERSION=8u442-b06
 ENV JAVA_URL=https://mirrors.tuna.tsinghua.edu.cn/Adoptium/8/jdk/x64/linux/OpenJDK8U-jdk_x64_linux_hotspot_8u442b06.tar.gz
 
 RUN mkdir -p /opt/java && \
-    curl -L ${JAVA_URL} | tar -xz -C /opt/java
+    curl -L ${JAVA_URL} | tar -xz -C /opt/java && \
+    rm /usr/bin/java && \
+    rm /usr/bin/javac
 
 ENV JAVA_HOME=/opt/java/jdk8u442-b06
 ENV PATH="$PATH:$JAVA_HOME/bin"
-
-RUN cp /opt/java/jdk8u442-b06/bin/java /usr/bin/java && \
-    cp /opt/java/jdk8u442-b06/bin/javac /usr/bin/javac
-
 #
 #ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
 #ENV PATH="$JAVA_HOME/bin:$PATH"
