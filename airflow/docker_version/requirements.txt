@@ -1,4 +1,5 @@
 lxml
+pyspark==3.3.2
 python-decouple
 apache-airflow-providers-apache-spark==2.1.0
 requests
