@@ -31,6 +31,8 @@ services:
     depends_on:
       - mysql
     ports:
+      - "46888:46888" # spark driver驱动端口 88 和 89
+      - "46889:46889"
       - "8080:8080"
     volumes:
       - ./dags:/opt/airflow/dags

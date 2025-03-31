@@ -1,5 +1,5 @@
 lxml
 python-decouple
-apache-airflow-providers-apache-spark
+apache-airflow-providers-apache-spark==2.1.0
 requests
 pandas
