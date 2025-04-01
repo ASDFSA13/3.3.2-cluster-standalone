@@ -7,9 +7,11 @@ RUN rm -f /etc/apt/sources.list.d/debian.sources && \
     echo "deb https://mirrors.aliyun.com/debian bookworm-updates main contrib non-free" >> /etc/apt/sources.list && \
     echo "deb https://mirrors.aliyun.com/debian-security bookworm-security main contrib non-free" >> /etc/apt/sources.list && \
     apt-get update && \
-    apt-get install -y ant sudo wget curl tar && \
+    apt-get install -y ant sudo wget curl tar procps && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    rm -f /usr/bin/java && \
+    rm -f /usr/bin/javac
 
 
 # 下载并安装 Adoptium JDK 8（Temurin）
@@ -17,9 +19,7 @@ ENV JAVA_VERSION=8u442-b06
 ENV JAVA_URL=https://mirrors.tuna.tsinghua.edu.cn/Adoptium/8/jdk/x64/linux/OpenJDK8U-jdk_x64_linux_hotspot_8u442b06.tar.gz
 
 RUN mkdir -p /opt/java && \
-    curl -L ${JAVA_URL} | tar -xz -C /opt/java && \
-    rm /usr/bin/java && \
-    rm /usr/bin/javac
+    curl -L ${JAVA_URL} | tar -xz -C /opt/java
 
 ENV JAVA_HOME=/opt/java/jdk8u442-b06
 ENV PATH="$PATH:$JAVA_HOME/bin"
