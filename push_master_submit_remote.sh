@@ -11,15 +11,16 @@
 
 
 # ---------- 配置开始 ----------
-SSH_USER="zyl"
-SSH_HOST="192.168.116.129"
-REMOTE_TMP_DIR="/home"
+SSH_USER="zyl" # 跳板机用户
+SSH_HOST="192.168.116.129" # 跳板机地址
+REMOTE_TMP_DIR="/home/zyl" # 远程临时目录
+MEMORY="512m" # 执行器内存消耗
+MAIN_CLASS=
+# ---------- 配置结束 ----------
 CONTAINER_NAME="spark-master"
 CONTAINER_WORKSPACE="/opt/workspace"
 SPARK_SUBMIT_PATH="/usr/bin/spark-3.3.2-bin-hadoop3/bin/spark-submit"
 SPARK_MASTER_URL="spark://spark-master:7077"
-
-# ---------- 配置结束 ----------
 
 LOCAL_FILE=$1
 MAIN_CLASS=$2
@@ -47,7 +48,7 @@ elif [[ "$EXTENSION" == "jar" ]]; then
     echo "提交jar时必须指定MainClass！"
     exit 1
   fi
-  SPARK_SUBMIT_CMD="${SPARK_SUBMIT_PATH} --class ${MAIN_CLASS} --master ${SPARK_MASTER_URL} ${CONTAINER_WORKSPACE}/${REMOTE_FILENAME}"
+  SPARK_SUBMIT_CMD="${SPARK_SUBMIT_PATH} --deploy-mode cluster --driver-memory ${MEMORY} --executor-memory ${MEMORY} --class ${MAIN_CLASS} --master ${SPARK_MASTER_URL} ${CONTAINER_WORKSPACE}/${REMOTE_FILENAME}"
 else
   echo "不支持的文件类型: $EXTENSION，仅支持 .py 或 .jar"
   exit 1

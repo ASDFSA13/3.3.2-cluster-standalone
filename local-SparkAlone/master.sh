@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -e
 
+DNS=192.168.116.130
+
+export SPARK_WORKER_WEBUI_HOST=$DNS
+export SPARK_PUBLIC_DNS=$DNS
+export SPARK_MASTER_HOST=$DNS
+export SPARK_MASTER_PORT=7077
+
 sudo apt-get update -y
 sudo apt-get install -y curl vim procps openjdk-8-jre-headless
 
@@ -42,6 +49,8 @@ spark.eventLog.dir               file://$HOME/log/spark-events
 spark.history.provider           org.apache.spark.deploy.history.FsHistoryProvider
 spark.history.fs.logDirectory    file://$HOME/log/spark-events
 spark.history.ui.port            18080
+spark.authenticate               true
+spark.authenticate.secret        demo_secret
 EOF
 
 # 启动服务
