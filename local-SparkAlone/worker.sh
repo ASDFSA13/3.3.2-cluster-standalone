@@ -3,8 +3,16 @@ set -e
 
 sudo apt-get update -y
 sudo apt-get install -y curl vim procps openjdk-8-jre-headless
+DNS=192.168.116.130
 
-MASTER_IP="替换为你的Master节点IP"
+export SPARK_WORKER_WEBUI_HOST=$DNS
+export SPARK_PUBLIC_DNS=$DNS
+
+export SPARK_MASTER=spark://$DNS:7077
+export SPARK_MASTER_HOST=$DNS
+export SPARK_MASTER_PORT=7077
+
+MASTER_IP=$DNS
 SPARK_VERSION=3.3.2
 HADOOP_VERSION=3
 SPARK_HOME=/usr/local/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}
