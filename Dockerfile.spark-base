@@ -35,6 +35,8 @@ spark.eventLog.dir               file:///opt/workspace/spark-events\n\
 spark.history.provider           org.apache.spark.deploy.history.FsHistoryProvider\n\
 spark.history.fs.logDirectory    file:///opt/workspace/spark-events\n\
 spark.history.ui.port            18080\n\
+spark.authenticate               true\n\
+spark.authenticate.secret        demo_secret\n\
 " >> ${SPARK_HOME}/conf/spark-defaults.conf
 
 COPY workspace/*.jar ${SPARK_HOME}/jars/    #把数据库的连接器一起打包
