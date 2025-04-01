@@ -59,5 +59,3 @@ docker build \
   --build-arg spark_version=${SPARK_VERSION} \
   -t spark-cluster-worker \
   -f Dockerfile.spark-worker .
-
-

@@ -1,0 +1,13 @@
+mvn install 打包即可 拿到jar包后进行，最小化任务队列
+
+bin/spark-submit \
+  --class com.airscholar.spark.WordCountJob \
+  --master spark://spark-master:7077  \
+  ./spark-job-1.0-SNAPSHOT.jar
+
+
+提交master
+
+bin/spark-submit \
+  --master spark://spark-master:7077  \
+  ./xxx.py
